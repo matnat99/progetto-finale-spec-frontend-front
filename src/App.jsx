@@ -7,6 +7,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/videogames/:id" element={<DetailPage />} />
       </Routes>
     </BrowserRouter>
   );
