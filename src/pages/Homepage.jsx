@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useCompare } from "../context/CompareContext";
 
 export default function HomePage() {
   const [games, setGames] = useState([]);
@@ -7,6 +8,8 @@ export default function HomePage() {
   const [category, setCategory] = useState("all");
   const [sortField, setSortField] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
+
+  const { toggleCompare, comparedGames } = useCompare();
 
   useEffect(() => {
     fetch("http://localhost:3001/videogames")
@@ -24,8 +27,9 @@ export default function HomePage() {
         return matchTitle && matchCategory;
       })
       .sort((a, b) => {
-        const fieldA = a[sortField].toLowerCase?.() ?? a[sortField];
-        const fieldB = b[sortField].toLowerCase?.() ?? b[sortField];
+        const fieldA = a[sortField]?.toLowerCase?.() ?? a[sortField];
+        const fieldB = b[sortField]?.toLowerCase?.() ?? b[sortField];
+
         if (fieldA < fieldB) return sortOrder === "asc" ? -1 : 1;
         if (fieldA > fieldB) return sortOrder === "asc" ? 1 : -1;
         return 0;
@@ -82,17 +86,41 @@ export default function HomePage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {filteredSortedGames.map((game) => (
-          <Link
-            key={game.id}
-            to={`/videogames/${game.id}`}
-            className="block border border-gray-300 rounded-lg p-4 hover:shadow-md transition"
-          >
-            <h2 className="text-xl font-semibold">{game.title}</h2>
-            <p className="text-sm text-gray-600">{game.category}</p>
-          </Link>
-        ))}
+        {filteredSortedGames.map((game) => {
+          const isSelected = comparedGames.some((g) => g.id === game.id);
+          return (
+            <div
+              key={game.id}
+              className={`border rounded-lg p-4 hover:shadow-md transition ${
+                isSelected ? "border-blue-500" : ""
+              }`}
+            >
+              <Link to={`/videogames/${game.id}`}>
+                <h2 className="text-xl font-semibold">{game.title}</h2>
+                <p className="text-sm text-gray-600">{game.category}</p>
+              </Link>
+
+              <button
+                onClick={() => toggleCompare(game)}
+                className="mt-2 text-sm text-blue-600 hover:underline"
+              >
+                {isSelected ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
+              </button>
+            </div>
+          );
+        })}
       </div>
+
+      {comparedGames.length === 2 && (
+        <div className="mt-6 text-center">
+          <Link
+            to="/compare"
+            className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Vai al confronto
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
