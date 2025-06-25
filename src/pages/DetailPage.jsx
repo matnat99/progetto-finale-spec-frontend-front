@@ -4,13 +4,20 @@ import { useCompare } from "../context/CompareContext";
 import { useFavorites } from "../context/FavoriteContext";
 
 export default function DetailPage() {
+  // ID del gioco dalla URL
   const { id } = useParams();
+
+  // Stato per salvare il gioco corrente
   const [game, setGame] = useState(null);
+
+  // Funzioni dal context di confronto e preferiti
   const { comparedGames, toggleCompare } = useCompare();
   const { toggleFavorite, isFavorite } = useFavorites();
 
+  // Verifica se il gioco è già stato aggiunto al confronto
   const isInCompare = game && comparedGames.some((g) => g.id === game.id);
 
+  // Effetto per caricare i dati del gioco quando cambia l'ID
   useEffect(() => {
     const fetchGame = async () => {
       try {
@@ -35,6 +42,7 @@ export default function DetailPage() {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">{game.title}</h1>
+
       <p className="mb-2">
         <strong>Categoria:</strong> {game.category}
       </p>
@@ -69,6 +77,7 @@ export default function DetailPage() {
         >
           {isInCompare ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
         </button>
+
         <button
           onClick={() => toggleFavorite(game)}
           className="bg-yellow-400 text-white px-4 py-2 rounded"
@@ -80,6 +89,7 @@ export default function DetailPage() {
           )}
         </button>
       </div>
+
       <div className="mt-6">
         <Link to="/" className="text-blue-600 hover:underline">
           ← Torna alla lista

@@ -1,33 +1,46 @@
 import { useFavorites } from "../context/FavoriteContext";
 import { Link } from "react-router-dom";
 
+// Componente per mostrare la lista dei giochi preferiti
 export default function FavoritesPage() {
-  const { favorites } = useFavorites();
+  // Recupero dei dati e delle funzioni dal context dei preferiti
+  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+
+  // Se non ci sono giochi preferiti, mostra un messaggio
+  if (favorites.length === 0) {
+    return <p className="text-center p-6">Nessun preferito salvato.</p>;
+  }
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">Preferiti</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">I tuoi preferiti</h1>
 
-      {favorites.length === 0 ? (
-        <p className="text-center text-gray-500">
-          Nessun gioco nei preferiti.{" "}
-          <Link to="/" className="text-blue-600 hover:underline">
-            Torna alla lista
-          </Link>
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {favorites.map((game) => (
-            <div
-              key={game.id}
-              className="border rounded-lg p-4 hover:shadow-md transition"
-            >
-              <h2 className="text-xl font-semibold">{game.title}</h2>
-              <p className="text-sm text-gray-600">{game.category}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {favorites.map((game) => (
+          <div
+            key={game.id}
+            className="border p-4 rounded shadow-sm cursor-pointer"
+            onClick={() => (window.location.href = `/videogames/${game.id}`)}
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-xl font-bold">{game.title}</h2>
+                <p className="text-sm text-gray-600 mb-2">{game.category}</p>
+              </div>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(game);
+                }}
+                className="text-yellow-600 text-lg"
+              >
+                <i className="fa-solid fa-heart"></i>
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

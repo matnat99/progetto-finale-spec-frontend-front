@@ -4,6 +4,7 @@ import { useCompare } from "../context/CompareContext";
 import { useFavorites } from "../context/FavoriteContext";
 
 export default function HomePage() {
+  // Stati locali per gestire giochi, ricerca, filtri e ordinamento
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -11,10 +12,12 @@ export default function HomePage() {
   const [sortField, setSortField] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
 
+  // Recupera funzioni e stati globali da context
   const { toggleCompare, comparedGames } = useCompare();
   const { toggleFavorite, isFavorite } = useFavorites();
   const navigate = useNavigate();
 
+  // Fetch iniziale dei videogiochi
   useEffect(() => {
     const fetchGames = async () => {
       try {
@@ -28,6 +31,7 @@ export default function HomePage() {
     fetchGames();
   }, []);
 
+  // Effetto debounce per la ricerca
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDebouncedSearch(search);
@@ -35,6 +39,7 @@ export default function HomePage() {
     return () => clearTimeout(timeoutId);
   }, [search]);
 
+  // Filtra e ordina i giochi in base a ricerca, categoria e ordinamento
   const filteredSortedGames = useMemo(() => {
     return [...games]
       .filter((game) => {
@@ -54,6 +59,7 @@ export default function HomePage() {
       });
   }, [games, debouncedSearch, category, sortField, sortOrder]);
 
+  // Ricava le categorie uniche per il filtro
   const uniqueCategories = [...new Set(games.map((g) => g.category))];
 
   return (
@@ -61,6 +67,7 @@ export default function HomePage() {
       <h1 className="text-3xl font-bold mb-6 text-center">Videogiochi</h1>
 
       <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between items-center">
+        {/* Ricerca per titolo */}
         <input
           type="text"
           placeholder="Cerca per titolo..."
@@ -69,6 +76,7 @@ export default function HomePage() {
           onChange={(e) => setSearch(e.target.value)}
         />
 
+        {/* Filtro per categoria */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -82,6 +90,7 @@ export default function HomePage() {
           ))}
         </select>
 
+        {/* Ordinamento per campo e direzione */}
         <div className="flex items-center gap-2">
           <select
             value={sortField}
@@ -103,6 +112,7 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Lista dei giochi filtrati e ordinati */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredSortedGames.length > 0 ? (
           filteredSortedGames.map((game) => {
@@ -132,8 +142,10 @@ export default function HomePage() {
                     )}
                   </button>
                 </div>
+
                 <p className="text-sm text-gray-600">{game.category}</p>
 
+                {/* Aggiungi o rimuovi dal confronto */}
                 <p
                   onClick={(e) => {
                     e.stopPropagation();

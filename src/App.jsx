@@ -15,9 +15,9 @@ import Navbar from "./components/Navbar.jsx";
 
 export default function App() {
   return (
-    <FavoritesProvider>
-      <CompareProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <FavoritesProvider>
+        <CompareProvider>
           <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -25,8 +25,8 @@ export default function App() {
             <Route path="/compare" element={<ComparePage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
           </Routes>
-        </BrowserRouter>
-      </CompareProvider>
-    </FavoritesProvider>
+        </CompareProvider>
+      </FavoritesProvider>
+    </BrowserRouter>
   );
 }

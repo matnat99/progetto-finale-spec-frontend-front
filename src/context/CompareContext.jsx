@@ -1,10 +1,14 @@
 import { createContext, useContext, useState } from "react";
 
+// Creazione del contesto per la funzionalità di confronto giochi
 const CompareContext = createContext();
 
+// Provider che fornisce accesso al contesto del confronto
 export function CompareProvider({ children }) {
+  // Stato che tiene traccia dei giochi selezionati per il confronto
   const [comparedGames, setComparedGames] = useState([]);
 
+  // Funzione per aggiungere o rimuovere un gioco dal confronto
   const toggleCompare = async (game) => {
     const exists = comparedGames.some((g) => g.id === game.id);
 
@@ -19,6 +23,7 @@ export function CompareProvider({ children }) {
       try {
         const res = await fetch(`http://localhost:3001/videogames/${game.id}`);
         const data = await res.json();
+
         if (data?.videogame) {
           setComparedGames((curr) => [...curr, data.videogame]);
         }
@@ -28,6 +33,7 @@ export function CompareProvider({ children }) {
     }
   };
 
+  // Funzione per svuotare il confronto
   const clearCompare = () => {
     setComparedGames([]);
   };
