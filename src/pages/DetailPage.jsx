@@ -1,11 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useCompare } from "../context/CompareContext";
+import { useFavorites } from "../context/FavoriteContext";
 
 export default function DetailPage() {
   const { id } = useParams();
   const [game, setGame] = useState(null);
   const { comparedGames, toggleCompare } = useCompare();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const isInCompare = game && comparedGames.some((g) => g.id === game.id);
 
@@ -55,15 +57,26 @@ export default function DetailPage() {
           : "Prezzo non disponibile"}
       </p>
 
-      <button
-        onClick={() => toggleCompare(game)}
-        className={`px-4 py-2 rounded ${
-          isInCompare ? "bg-red-500" : "bg-blue-500"
-        } text-white`}
-      >
-        {isInCompare ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
-      </button>
-
+      <div className="flex gap-3">
+        <button
+          onClick={() => toggleCompare(game)}
+          className={`px-4 py-2 rounded ${
+            isInCompare ? "bg-red-500" : "bg-blue-500"
+          } text-white`}
+        >
+          {isInCompare ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
+        </button>
+        <button
+          onClick={() => toggleFavorite(game)}
+          className="bg-yellow-400 text-white px-4 py-2 rounded"
+        >
+          {isFavorite(game.id) ? (
+            <i className="fa-solid fa-heart"></i>
+          ) : (
+            <i className="fa-regular fa-heart"></i>
+          )}
+        </button>
+      </div>
       <div className="mt-6">
         <Link to="/" className="text-blue-600 hover:underline">
           ← Torna alla lista

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCompare } from "../context/CompareContext";
+import { useFavorites } from "../context/FavoriteContext";
 
 export default function HomePage() {
   const [games, setGames] = useState([]);
@@ -10,6 +11,8 @@ export default function HomePage() {
   const [sortOrder, setSortOrder] = useState("asc");
 
   const { toggleCompare, comparedGames } = useCompare();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3001/videogames")
@@ -87,25 +90,43 @@ export default function HomePage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredSortedGames.map((game) => {
-          const isSelected = comparedGames.some((g) => g.id === game.id);
+          const isCompared = comparedGames.some((g) => g.id === game.id);
+
           return (
             <div
               key={game.id}
-              className={`border rounded-lg p-4 hover:shadow-md transition ${
-                isSelected ? "border-blue-500" : ""
+              className={`border rounded-lg p-4 hover:shadow-md transition cursor-pointer ${
+                isCompared ? "border-blue-500" : ""
               }`}
+              onClick={() => navigate(`/videogames/${game.id}`)}
             >
-              <Link to={`/videogames/${game.id}`}>
+              <div className="flex justify-between">
                 <h2 className="text-xl font-semibold">{game.title}</h2>
-                <p className="text-sm text-gray-600">{game.category}</p>
-              </Link>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(game);
+                  }}
+                  className="text-lg text-yellow-600"
+                >
+                  {isFavorite(game.id) ? (
+                    <i className="fa-solid fa-heart"></i>
+                  ) : (
+                    <i className="fa-regular fa-heart"></i>
+                  )}
+                </button>
+              </div>
+              <p className="text-sm text-gray-600">{game.category}</p>
 
-              <button
-                onClick={() => toggleCompare(game)}
+              <p
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleCompare(game);
+                }}
                 className="mt-2 text-sm text-blue-600 hover:underline"
               >
-                {isSelected ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
-              </button>
+                {isCompared ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
+              </p>
             </div>
           );
         })}
