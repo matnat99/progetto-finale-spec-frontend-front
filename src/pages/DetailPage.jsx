@@ -12,13 +12,16 @@ export default function DetailPage() {
   const isInCompare = game && comparedGames.some((g) => g.id === game.id);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/videogames/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setGame(data.videogame);
-        console.log("dati ricevuti", data);
-      })
-      .catch((err) => console.error("Errore nel fetch:", err));
+    const fetchGame = async () => {
+      try {
+        const res = await fetch(`http://localhost:3001/videogames/${id}`);
+        const data = await res.json();
+        if (data?.videogame) setGame(data.videogame);
+      } catch (error) {
+        console.error("Errore nel caricamento del gioco:", error);
+      }
+    };
+    fetchGame();
   }, [id]);
 
   if (!game) {

@@ -1,27 +1,15 @@
 import { useCompare } from "../context/CompareContext";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function ComparePage() {
   const { comparedGames, clearCompare } = useCompare();
-  const [fullGames, setFullGames] = useState([]);
 
-  useEffect(() => {
-    if (comparedGames.length === 2) {
-      Promise.all(
-        comparedGames.map((game) =>
-          fetch(`http://localhost:3001/videogames/${game.id}`)
-            .then((res) => res.json())
-            .then((data) => data.videogame)
-        )
-      ).then(setFullGames);
-    }
-  }, [comparedGames]);
-
-  if (comparedGames.length !== 2) {
+  if (comparedGames.length === 0) {
     return (
       <div className="p-6 text-center">
-        <p>Seleziona 2 giochi dalla lista per confrontarli.</p>
+        <p className="text-lg mb-4">
+          Nessun gioco selezionato per il confronto.
+        </p>
         <Link to="/" className="text-blue-600 hover:underline">
           Torna alla lista
         </Link>
@@ -29,19 +17,37 @@ export default function ComparePage() {
     );
   }
 
-  if (fullGames.length !== 2) {
-    return <div className="p-6 text-center">Caricamento giochi...</div>;
+  if (comparedGames.length < 2) {
+    return (
+      <div className="p-6 text-center">
+        <p className="mb-4 text-gray-600">
+          Seleziona almeno 2 giochi dalla lista per poterli confrontare.
+        </p>
+        <Link
+          to="/"
+          className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Torna alla lista
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Confronto</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {fullGames.map((game) => (
+
+      <div
+        className={`grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-${Math.min(
+          comparedGames.length,
+          4
+        )}`}
+      >
+        {comparedGames.map((game) => (
           <div key={game.id} className="border rounded p-4 shadow-sm">
-            <h2 className="text-xl font-bold mb-2">{game.title}</h2>
+            <h2 className="text-xl font-bold mb-2">{game.title ?? "N/D"}</h2>
             <p>
-              <strong>Categoria:</strong> {game.category}
+              <strong>Categoria:</strong> {game.category ?? "N/D"}
             </p>
             <p>
               <strong>Piattaforma:</strong> {game.platform ?? "N/D"}
@@ -56,13 +62,18 @@ export default function ComparePage() {
               <strong>Voto:</strong> {game.rating ?? "N/D"}
             </p>
             <p>
-              <strong>Multiplayer:</strong> {game.multiplayer ? "Sì" : "No"}
+              <strong>Multiplayer:</strong>{" "}
+              {game.multiplayer != null
+                ? game.multiplayer
+                  ? "Sì"
+                  : "No"
+                : "N/D"}
             </p>
             <p>
               <strong>Prezzo:</strong>{" "}
               {typeof game.price === "number"
                 ? `€${game.price.toFixed(2)}`
-                : "Prezzo non disponibile"}
+                : "N/D"}
             </p>
           </div>
         ))}

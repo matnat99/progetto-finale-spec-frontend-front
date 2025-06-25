@@ -6,6 +6,7 @@ import { useFavorites } from "../context/FavoriteContext";
 export default function HomePage() {
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [sortField, setSortField] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -15,17 +16,31 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3001/videogames")
-      .then((res) => res.json())
-      .then((data) => setGames(data));
+    const fetchGames = async () => {
+      try {
+        const res = await fetch("http://localhost:3001/videogames");
+        const data = await res.json();
+        setGames(data);
+      } catch (error) {
+        console.error("Errore nel caricamento dei videogiochi:", error);
+      }
+    };
+    fetchGames();
   }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [search]);
 
   const filteredSortedGames = useMemo(() => {
     return [...games]
       .filter((game) => {
         const matchTitle = game.title
           .toLowerCase()
-          .includes(search.toLowerCase());
+          .includes(debouncedSearch.toLowerCase());
         const matchCategory = category === "all" || game.category === category;
         return matchTitle && matchCategory;
       })
@@ -37,7 +52,7 @@ export default function HomePage() {
         if (fieldA > fieldB) return sortOrder === "asc" ? 1 : -1;
         return 0;
       });
-  }, [games, search, category, sortField, sortOrder]);
+  }, [games, debouncedSearch, category, sortField, sortOrder]);
 
   const uniqueCategories = [...new Set(games.map((g) => g.category))];
 
@@ -89,50 +104,58 @@ export default function HomePage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {filteredSortedGames.map((game) => {
-          const isCompared = comparedGames.some((g) => g.id === game.id);
+        {filteredSortedGames.length > 0 ? (
+          filteredSortedGames.map((game) => {
+            const isCompared = comparedGames.some((g) => g.id === game.id);
 
-          return (
-            <div
-              key={game.id}
-              className={`border rounded-lg p-4 hover:shadow-md transition cursor-pointer ${
-                isCompared ? "border-blue-500" : ""
-              }`}
-              onClick={() => navigate(`/videogames/${game.id}`)}
-            >
-              <div className="flex justify-between">
-                <h2 className="text-xl font-semibold">{game.title}</h2>
-                <button
+            return (
+              <div
+                key={game.id}
+                className={`border rounded-lg p-4 hover:shadow-md transition cursor-pointer ${
+                  isCompared ? "border-blue-500" : ""
+                }`}
+                onClick={() => navigate(`/videogames/${game.id}`)}
+              >
+                <div className="flex justify-between">
+                  <h2 className="text-xl font-semibold">{game.title}</h2>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(game);
+                    }}
+                    className="text-lg text-yellow-600"
+                  >
+                    {isFavorite(game.id) ? (
+                      <i className="fa-solid fa-heart"></i>
+                    ) : (
+                      <i className="fa-regular fa-heart"></i>
+                    )}
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600">{game.category}</p>
+
+                <p
                   onClick={(e) => {
                     e.stopPropagation();
-                    toggleFavorite(game);
+                    toggleCompare(game);
                   }}
-                  className="text-lg text-yellow-600"
+                  className="mt-2 text-sm text-blue-600 hover:underline"
                 >
-                  {isFavorite(game.id) ? (
-                    <i className="fa-solid fa-heart"></i>
-                  ) : (
-                    <i className="fa-regular fa-heart"></i>
-                  )}
-                </button>
+                  {isCompared
+                    ? "Rimuovi dal confronto"
+                    : "Aggiungi al confronto"}
+                </p>
               </div>
-              <p className="text-sm text-gray-600">{game.category}</p>
-
-              <p
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleCompare(game);
-                }}
-                className="mt-2 text-sm text-blue-600 hover:underline"
-              >
-                {isCompared ? "Rimuovi dal confronto" : "Aggiungi al confronto"}
-              </p>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <p className="col-span-full text-center text-gray-500">
+            Nessun videogioco trovato.
+          </p>
+        )}
       </div>
 
-      {comparedGames.length === 2 && (
+      {comparedGames.length > 1 && comparedGames.length <= 4 && (
         <div className="mt-6 text-center">
           <Link
             to="/compare"
