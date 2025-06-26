@@ -11,20 +11,22 @@ import { CompareProvider } from "./context/CompareContext.jsx";
 import { FavoritesProvider } from "./context/FavoriteContext.jsx";
 
 // Components
-import Navbar from "./components/Navbar.jsx";
+import Header from "./components/Header.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <FavoritesProvider>
         <CompareProvider>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/videogames/:id" element={<DetailPage />} />
-            <Route path="/compare" element={<ComparePage />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
-          </Routes>
+          <Header />
+          <div className="bg-gray-200 min-h-screen">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/videogames/:id" element={<DetailPage />} />
+              <Route path="/compare" element={<ComparePage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
+            </Routes>
+          </div>
         </CompareProvider>
       </FavoritesProvider>
     </BrowserRouter>
