@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import toast from "react-hot-toast";
 
 // Creazione del contesto per la funzionalità di confronto giochi
 const CompareContext = createContext();
@@ -16,7 +17,7 @@ export function CompareProvider({ children }) {
       setComparedGames((curr) => curr.filter((g) => g.id !== game.id));
     } else {
       if (comparedGames.length >= 4) {
-        alert("Puoi confrontare al massimo 4 giochi.");
+        toast.error("Puoi confrontare al massimo 4 giochi.");
         return;
       }
 

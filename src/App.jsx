@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 // Pages
 import HomePage from "./pages/Homepage.jsx";
@@ -27,6 +28,8 @@ export default function App() {
               <Route path="/favorites" element={<FavoritesPage />} />
             </Routes>
           </div>
+
+          <Toaster position="top-right" reverseOrder={false} />
         </CompareProvider>
       </FavoritesProvider>
     </BrowserRouter>

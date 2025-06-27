@@ -5,6 +5,7 @@ import { useFavorites } from "../context/FavoriteContext";
 import { getCorrectImage } from "../utils/imageHelper";
 
 export default function HomePage() {
+  // Stati locali per gestire giochi, ricerca, filtri e ordinamento
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -12,10 +13,12 @@ export default function HomePage() {
   const [sortField, setSortField] = useState("title");
   const [sortOrder, setSortOrder] = useState("asc");
 
+  // Recupera funzioni e stati globali da context
   const { toggleCompare, comparedGames } = useCompare();
   const { toggleFavorite, isFavorite } = useFavorites();
   const navigate = useNavigate();
 
+  // Fetch iniziale dei videogiochi
   useEffect(() => {
     const fetchGames = async () => {
       try {
@@ -29,6 +32,7 @@ export default function HomePage() {
     fetchGames();
   }, []);
 
+  // Effetto debounce per la ricerca
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDebouncedSearch(search);
@@ -36,6 +40,7 @@ export default function HomePage() {
     return () => clearTimeout(timeoutId);
   }, [search]);
 
+  // Filtra e ordina i giochi in base a ricerca, categoria e ordinamento
   const filteredSortedGames = useMemo(() => {
     return [...games]
       .filter((game) => {
@@ -55,12 +60,14 @@ export default function HomePage() {
       });
   }, [games, debouncedSearch, category, sortField, sortOrder]);
 
+  // Ricava le categorie uniche per il filtro
   const uniqueCategories = [...new Set(games.map((g) => g.category))];
 
   return (
     <div className="bg-gray-200 min-h-screen">
       <div className="max-w-5xl mx-auto p-4">
         <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between items-center">
+          {/* Ricerca per titolo */}
           <input
             type="text"
             placeholder="Cerca per titolo..."
@@ -69,10 +76,11 @@ export default function HomePage() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
+          {/* Filtro per categoria */}
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border border-blue-900 px-3 py-2 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
+            className="border border-blue-900 px-3 py-2 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
           >
             <option value="all">Tutte le categorie</option>
             {uniqueCategories.map((cat) => (
@@ -82,18 +90,19 @@ export default function HomePage() {
             ))}
           </select>
 
+          {/* Ordinamento per campo e direzione */}
           <div className="flex items-center gap-2">
             <select
               value={sortField}
               onChange={(e) => setSortField(e.target.value)}
-              className="border border-blue-900 px-2 py-2 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="border border-blue-900 px-2 py-2 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
             >
               <option value="title">Titolo</option>
               <option value="category">Categoria</option>
             </select>
 
             <button
-              className="px-3 py-2 border border-blue-900 rounded bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900"
+              className="px-3 py-2 border border-blue-900 rounded bg-white hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-900 cursor-pointer"
               onClick={() =>
                 setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
               }
@@ -103,6 +112,7 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Lista dei giochi filtrati e ordinati */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {filteredSortedGames.length > 0 ? (
             filteredSortedGames.map((game) => {
@@ -128,7 +138,7 @@ export default function HomePage() {
                         e.stopPropagation();
                         toggleFavorite(game);
                       }}
-                      className="text-lg text-yellow-600"
+                      className="text-lg text-yellow-600 cursor-pointer"
                     >
                       {isFavorite(game.id) ? (
                         <i className="fa-solid fa-heart"></i>
@@ -146,7 +156,7 @@ export default function HomePage() {
                         e.stopPropagation();
                         toggleCompare(game);
                       }}
-                      className={`mt-4 text-sm px-3 py-1 rounded transition font-medium ${
+                      className={`mt-4 text-sm px-3 py-1 rounded transition font-medium cursor-pointer ${
                         isCompared
                           ? "bg-red-700 text-white hover:bg-red-500"
                           : "bg-blue-700 text-white hover:bg-blue-500"
@@ -180,7 +190,7 @@ export default function HomePage() {
         <div className="fixed bottom-6 right-6 z-50">
           <Link
             to="/compare"
-            className="bg-blue-900 text-white hover:bg-blue-700 px-5 py-3 rounded shadow-lg  transition"
+            className="bg-blue-900 text-white hover:bg-blue-700 px-5 py-3 rounded shadow-lg  transition cursor-pointer"
           >
             Vai al confronto
           </Link>

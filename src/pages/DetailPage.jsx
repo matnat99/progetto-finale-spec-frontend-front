@@ -5,14 +5,22 @@ import { useFavorites } from "../context/FavoriteContext";
 import { getCorrectImage } from "../utils/imageHelper";
 
 export default function DetailPage() {
+  // ID del gioco dalla URL
   const { id } = useParams();
-  const navigate = useNavigate();
+
+  // Stato per salvare il gioco corrente
   const [game, setGame] = useState(null);
+
+  // Funzioni dal context di confronto e preferiti
   const { comparedGames, toggleCompare } = useCompare();
   const { toggleFavorite, isFavorite } = useFavorites();
 
+  const navigate = useNavigate();
+
+  // Verifica se il gioco è già stato aggiunto al confronto
   const isInCompare = game && comparedGames.some((g) => g.id === game.id);
 
+  // Effetto per caricare i dati del gioco quando cambia l'ID
   useEffect(() => {
     const fetchGame = async () => {
       try {
@@ -44,6 +52,10 @@ export default function DetailPage() {
           <i class="fa-solid fa-arrow-left"></i> Torna indietro
         </button>
       </div>
+
+      <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">
+        Dettagli
+      </h1>
 
       <div className="bg-gray-800 text-white rounded-lg shadow-md p-6">
         <div className="md:flex md:gap-6">
