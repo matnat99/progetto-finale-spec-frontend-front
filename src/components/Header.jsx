@@ -10,10 +10,10 @@ export default function Header() {
   const hasCompared = comparedGames.length > 0;
 
   return (
-    <header className="bg-gray-800 text-white">
-      <nav className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+    <header className="bg-gray-800 text-white shadow-md">
+      <nav className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="text-xl font-bold transition">
-          🎮 GameCompare
+          <img src="/img/Logo.png" alt="Logo" className="w-70 h-auto" />
         </Link>
 
         <div className="flex gap-6 items-center text-sm relative">
