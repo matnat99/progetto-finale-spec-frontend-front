@@ -19,7 +19,7 @@ export default function App() {
       <FavoritesProvider>
         <CompareProvider>
           <Header />
-          <div className="bg-gray-200 min-h-screen">
+          <div className="bg-gray-200 min-h-screen pt-15">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/videogames/:id" element={<DetailPage />} />

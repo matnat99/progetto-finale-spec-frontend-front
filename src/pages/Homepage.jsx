@@ -60,10 +60,6 @@ export default function HomePage() {
   return (
     <div className="bg-gray-200 min-h-screen">
       <div className="max-w-5xl mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Videogiochi
-        </h1>
-
         <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between items-center">
           <input
             type="text"
@@ -115,7 +111,7 @@ export default function HomePage() {
               return (
                 <div
                   key={game.id}
-                  className={`bg-white border border-blue-900 rounded-lg p-4 hover:shadow-md transition cursor-pointer ${
+                  className={`bg-gray-800 text-white border border-blue-900 rounded-lg p-4 hover:shadow-md transition cursor-pointer ${
                     isCompared ? "border-blue-500" : ""
                   }`}
                   onClick={() => navigate(`/videogames/${game.id}`)}
@@ -126,9 +122,7 @@ export default function HomePage() {
                     className="w-full h-48 object-cover rounded mb-2"
                   />
                   <div className="flex justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {game.title}
-                    </h2>
+                    <h2 className="text-xl font-semibold">{game.title}</h2>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -144,7 +138,7 @@ export default function HomePage() {
                     </button>
                   </div>
 
-                  <p className="text-sm text-gray-600">{game.category}</p>
+                  <p className="text-sm">{game.category}</p>
 
                   <div className="flex justify-center">
                     <button
@@ -155,7 +149,7 @@ export default function HomePage() {
                       className={`mt-4 text-sm px-3 py-1 rounded transition font-medium ${
                         isCompared
                           ? "bg-red-700 text-white hover:bg-red-500"
-                          : "bg-blue-900 text-white hover:bg-blue-700"
+                          : "bg-blue-700 text-white hover:bg-blue-500"
                       }`}
                     >
                       {isCompared ? (
